@@ -153,8 +153,11 @@ void OnInstanceQuitInMain(base::RunLoop* run_loop,
   DCHECK(exit_value);
   DCHECK(run_loop);
 
-  if (identity.name() != mash::common::GetWindowManagerServiceName() &&
+  if (
+#if defined(OS_CHROMEOS)
+      identity.name() != mash::common::GetWindowManagerServiceName() &&
       identity.name() != ui::mojom::kServiceName &&
+#endif
       identity.name() != content::mojom::kPackagedServicesServiceName) {
     return;
   }

@@ -28,7 +28,7 @@
         "nacl_loader": [ "browser" ],
         "preferences_forwarder": [ "pref_client" ],
         "preferences": [ "pref_client", "pref_control" ],
-        "ui": [ "display_controller", "ime_registrar", "window_manager" ]
+        "ui": [ "display_controller", "ime_registrar", "window_manager", "window_tree_host_factory_registrar" ]
       }
     },
     "navigation:frame": {

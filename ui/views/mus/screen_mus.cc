@@ -60,18 +60,18 @@ void ScreenMus::Init(service_manager::Connector* connector) {
   //
   // TODO(rockot): Do something better here. This should not have to block tasks
   // from running on the calling thread. http://crbug.com/594852.
-  bool success = display_manager_observer_binding_.WaitForIncomingMethodCall();
+  //bool success = display_manager_observer_binding_.WaitForIncomingMethodCall();
 
   // The WaitForIncomingMethodCall() should have supplied the set of Displays,
   // unless mus is going down, in which case encountered_error() is true, or the
   // call to WaitForIncomingMethodCall() failed.
-  if (display_list().displays().empty()) {
-    DCHECK(display_manager_.encountered_error() || !success);
+  //if (display_list().displays().empty()) {
+  //  DCHECK(display_manager_.encountered_error() || !success);
     // In this case we install a default display and assume the process is
     // going to exit shortly so that the real value doesn't matter.
     display_list().AddDisplay(
         display::Display(0xFFFFFFFF, gfx::Rect(0, 0, 801, 802)), Type::PRIMARY);
-  }
+  //}
 }
 
 display::Display ScreenMus::GetDisplayNearestWindow(
