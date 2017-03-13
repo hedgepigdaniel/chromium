@@ -111,7 +111,8 @@ bool DefaultAccessPolicy::CanSetWindowCompositorFrameSink(
 }
 
 bool DefaultAccessPolicy::CanSetWindowBounds(const ServerWindow* window) const {
-  return WasCreatedByThisClient(window);
+  return WasCreatedByThisClient(window) ||
+         delegate_->HasRootForAccessPolicy(window);
 }
 
 bool DefaultAccessPolicy::CanSetWindowProperties(

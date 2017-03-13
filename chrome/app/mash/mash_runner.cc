@@ -137,8 +137,11 @@ void OnInstanceQuitInMain(base::RunLoop* run_loop,
   DCHECK(exit_value);
   DCHECK(run_loop);
 
-  if (identity.name() != mash::common::GetWindowManagerServiceName() &&
+  if (
+#if defined(OS_CHROMEOS)
+      identity.name() != mash::common::GetWindowManagerServiceName() &&
       identity.name() != ui::mojom::kServiceName &&
+#endif
       identity.name() != content::mojom::kPackagedServicesServiceName) {
     return;
   }
@@ -219,8 +222,10 @@ int MashRunner::RunServiceManagerInMain() {
   // Ping services that we know we want to launch on startup (UI service,
   // window manager, quick launch app).
   context.connector()->Connect(ui::mojom::kServiceName);
+#if defined(OS_CHROMEOS)
   context.connector()->Connect(mash::common::GetWindowManagerServiceName());
   context.connector()->Connect(mash::quick_launch::mojom::kServiceName);
+#endif
   context.connector()->Connect(content::mojom::kPackagedServicesServiceName);
 
   run_loop.Run();
