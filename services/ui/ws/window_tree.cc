@@ -1738,6 +1738,8 @@ void WindowTree::DeactivateWindow(Id window_id) {
 }
 
 void WindowTree::StackAbove(uint32_t change_id, Id above_id, Id below_id) {
+  client()->OnChangeCompleted(change_id, true);
+  return;
   ServerWindow* above = GetWindowByClientId(ClientWindowId(above_id));
   if (!above) {
     DVLOG(1) << "StackAbove failed (invalid above id)";
@@ -1796,6 +1798,8 @@ void WindowTree::StackAbove(uint32_t change_id, Id above_id, Id below_id) {
 }
 
 void WindowTree::StackAtTop(uint32_t change_id, Id window_id) {
+  client()->OnChangeCompleted(change_id, true);
+  return;
   ServerWindow* window = GetWindowByClientId(ClientWindowId(window_id));
   if (!window) {
     DVLOG(1) << "StackAtTop failed (invalid id)";
