@@ -46,17 +46,20 @@ class MusDemo : public service_manager::Service,
   void AddPrimaryDisplay(const display::Display& display);
 
   // These functions help to manage the list of WindowTreeData structures.
-  // AppendWindowTreeData is used to add an uninitialized structure at the end
-  // of the list. When a new WindowTreeHostMus is created and is sent to
-  // MusDemo (via OnWmNewDisplay or OnEmbed), the WindowTreeData is initialized
-  // by a call to InitWindowTreeData and the demo starts. When the destruction
-  // of the WindowTreeHostMus is announced to MusDemo (via OnWmDisplayRemoved
-  // or OnEmbedRootDestroyed), the corresponding WindowTreeData is removed by
-  // a call to RemoveWindowTreeData.
+  // AppendWindowTreeData is used to add (uninitialized in case of external
+  // windows) WindowTreeData structures at the end of the list. When a new
+  // WindowTreeHostMus is created and is sent to MusDemo via OnWmNewDisplay, the
+  // WindowTreeData is initialized by a call to WindowTreeData::Init and the
+  // demo starts. In case if OnEmbedRootReady is called, corresponding
+  // WindowTreeData is found by looking associated WindowTreeHostMus with it and
+  // then WindowTreeData::Init is called. When the destruction of the
+  // WindowTreeHostMus is announced to MusDemo (via OnWmDisplayRemoved or
+  // OnEmbedRootDestroyed), the corresponding WindowTreeData is removed by a
+  // call to RemoveWindowTreeData.
   void AppendWindowTreeData(std::unique_ptr<WindowTreeData> window_tree_data);
-  void InitWindowTreeData(
-      std::unique_ptr<aura::WindowTreeHostMus> window_tree_host);
   void RemoveWindowTreeData(aura::WindowTreeHostMus* window_tree_host);
+  std::vector<std::unique_ptr<WindowTreeData>>::iterator FindWindowTreeData(
+      aura::WindowTreeHostMus* window_tree_host);
 
   aura::WindowTreeClient* window_tree_client() {
     return window_tree_client_.get();
@@ -65,7 +68,6 @@ class MusDemo : public service_manager::Service,
  private:
   virtual void OnStartImpl() = 0;
   virtual std::unique_ptr<aura::WindowTreeClient> CreateWindowTreeClient() = 0;
-  bool HasPendingWindowTreeData() const;
 
   // service_manager::Service:
   void OnStart() override;

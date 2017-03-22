@@ -39,32 +39,26 @@ void MusDemo::AddPrimaryDisplay(const display::Display& display) {
                                      display::DisplayList::Type::PRIMARY);
 }
 
-bool MusDemo::HasPendingWindowTreeData() const {
-  return !window_tree_data_list_.empty() &&
-         !window_tree_data_list_.back()->IsInitialized();
-}
-
 void MusDemo::AppendWindowTreeData(
     std::unique_ptr<WindowTreeData> window_tree_data) {
-  DCHECK(!HasPendingWindowTreeData());
   window_tree_data_list_.push_back(std::move(window_tree_data));
-}
-
-void MusDemo::InitWindowTreeData(
-    std::unique_ptr<aura::WindowTreeHostMus> window_tree_host) {
-  DCHECK(HasPendingWindowTreeData());
-  window_tree_data_list_.back()->Init(std::move(window_tree_host));
 }
 
 void MusDemo::RemoveWindowTreeData(aura::WindowTreeHostMus* window_tree_host) {
   DCHECK(window_tree_host);
+  auto window_tree_data = FindWindowTreeData(window_tree_host);
+  window_tree_data_list_.erase(window_tree_data);
+}
+
+std::vector<std::unique_ptr<WindowTreeData>>::iterator
+MusDemo::FindWindowTreeData(aura::WindowTreeHostMus* window_tree_host) {
   auto it =
       std::find_if(window_tree_data_list_.begin(), window_tree_data_list_.end(),
                    [window_tree_host](std::unique_ptr<WindowTreeData>& data) {
                      return data->WindowTreeHost() == window_tree_host;
                    });
   DCHECK(it != window_tree_data_list_.end());
-  window_tree_data_list_.erase(it);
+  return it;
 }
 
 void MusDemo::OnStart() {

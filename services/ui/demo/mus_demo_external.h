@@ -22,17 +22,15 @@ class MusDemoExternal : public MusDemo {
   ~MusDemoExternal() final;
 
  private:
-  void OpenNewWindow();
+  void OpenNewWindow(size_t window_index);
 
   // ui::demo::MusDemo:
   void OnStartImpl() final;
   std::unique_ptr<aura::WindowTreeClient> CreateWindowTreeClient() final;
 
   // aura::WindowTreeClientDelegate:
-  void OnEmbed(std::unique_ptr<aura::WindowTreeHostMus> window_tree_host) final;
+  void OnEmbedRootReady(aura::WindowTreeHostMus* window_tree_host) final;
   void OnEmbedRootDestroyed(aura::WindowTreeHostMus* window_tree_host) final;
-
-  size_t initialized_windows_count_ = 0;
 
   size_t number_of_windows_ = 1;
 

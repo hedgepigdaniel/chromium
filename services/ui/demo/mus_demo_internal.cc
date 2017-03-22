@@ -14,6 +14,22 @@ namespace demo {
 
 namespace {
 
+class WindowTreeDataInternal : public WindowTreeData {
+ public:
+  // Creates a new window tree host associated to the WindowTreeData.
+  WindowTreeDataInternal(
+      std::unique_ptr<aura::WindowTreeHostMus> window_tree_host,
+      int square_size)
+      : WindowTreeData(square_size) {
+    DCHECK(window_tree_host);
+    window_tree_host->InitHost();
+    window_tree_host->Show();
+    SetWindowTreeHost(std::move(window_tree_host));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(WindowTreeDataInternal);
+};
+
 // Size of square in pixels to draw.
 const int kSquareSize = 300;
 }
@@ -80,8 +96,11 @@ void MusDemoInternal::OnWmWillCreateDisplay(const display::Display& display) {
 void MusDemoInternal::OnWmNewDisplay(
     std::unique_ptr<aura::WindowTreeHostMus> window_tree_host,
     const display::Display& display) {
-  AppendWindowTreeData(base::MakeUnique<WindowTreeData>(kSquareSize));
-  InitWindowTreeData(std::move(window_tree_host));
+  std::unique_ptr<WindowTreeDataInternal> window_tree_data =
+      base::MakeUnique<WindowTreeDataInternal>(std::move(window_tree_host),
+                                               kSquareSize);
+  window_tree_data->Init();
+  AppendWindowTreeData(std::move(window_tree_data));
 }
 
 void MusDemoInternal::OnWmDisplayRemoved(

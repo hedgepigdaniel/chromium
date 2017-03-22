@@ -8,4 +8,7 @@ namespace aura {
 
 void WindowTreeClientDelegate::OnUnembed(Window* root) {}
 
+void WindowTreeClientDelegate::OnEmbedRootReady(
+    WindowTreeHostMus* window_tree_host) {}
+
 }  // namespace aura
