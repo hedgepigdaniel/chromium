@@ -22,18 +22,12 @@ namespace {
 class WindowTreeDataExternal : public WindowTreeData {
  public:
   // Creates a new window tree host associated to the WindowTreeData.
-  WindowTreeDataExternal(mojom::WindowTreeHostFactory* factory,
-                         mojom::WindowTreeClientPtr tree_client,
+  WindowTreeDataExternal(aura::WindowTreeClient* window_tree_client,
                          int square_size)
       : WindowTreeData(square_size) {
-    // TODO(tonikitoo,fwang): Extend the API to allow creating WindowTreeHost
-    // using the WindowTreeClient.
-    factory->CreateWindowTreeHost(MakeRequest(&host_), std::move(tree_client));
+    SetWindowTreeHost(
+        base::MakeUnique<aura::WindowTreeHostMus>(window_tree_client));
   }
-
- private:
-  // Holds the Mojo pointer to the window tree host.
-  mojom::WindowTreeHostPtr host_;
 
   DISALLOW_COPY_AND_ASSIGN(WindowTreeDataExternal);
 };
@@ -50,9 +44,7 @@ MusDemoExternal::~MusDemoExternal() {}
 
 std::unique_ptr<aura::WindowTreeClient>
 MusDemoExternal::CreateWindowTreeClient() {
-  return base::MakeUnique<aura::WindowTreeClient>(
-      context()->connector(), this, nullptr,
-      MakeRequest(&window_tree_client_mojo_));
+  return base::MakeUnique<aura::WindowTreeClient>(context()->connector(), this);
 }
 
 void MusDemoExternal::OnStartImpl() {
@@ -67,38 +59,31 @@ void MusDemoExternal::OnStartImpl() {
     }
   }
 
-  // TODO(tonikitoo,fwang): Extend the WindowTreeClient API to allow connection
-  // to the window tree host factory using window_tree_client().
-  context()->connector()->BindInterface(ui::mojom::kServiceName,
-                                        &window_tree_host_factory_);
+  window_tree_client()->ConnectViaWindowTreeHostFactory();
 
   // TODO(tonikitoo,fwang): Implement management of displays in external mode.
   // For now, a fake display is created in order to work around an assertion in
   // aura::GetDeviceScaleFactorFromDisplay().
   AddPrimaryDisplay(display::Display(0));
 
-  // The number of windows to open is specified by number_of_windows_. The
-  // windows are opened sequentially (the first one here and the others after
-  // each call to OnEmbed) to ensure that the WindowTreeHostMus passed to
-  // OnEmbed corresponds to the WindowTreeDataExternal::host_ created in
-  // OpenNewWindow.
+  // TODO(tonikitoo,fwang): New windows can be launched without need to wait
+  // the respective ::OnEmbed call of the previous instance.
   OpenNewWindow();
 }
 
 void MusDemoExternal::OpenNewWindow() {
-  // TODO(tonikitoo,fwang): Extend the WindowTreeClient API to allow creation
-  // of window tree host. Then pass window_tree_client() here and remove
-  // window_tree_host_factory_ and window_tree_client_mojo_. Currently
-  // window_tree_client_mojo_ is only initialized once so this is incorrect when
-  // kNumberOfWindows > 1.
   AppendWindowTreeData(base::MakeUnique<WindowTreeDataExternal>(
-      window_tree_host_factory_.get(), std::move(window_tree_client_mojo_),
+      window_tree_client(),
       GetSquareSizeForWindow(initialized_windows_count_)));
 }
 
 void MusDemoExternal::OnEmbed(
     std::unique_ptr<aura::WindowTreeHostMus> window_tree_host) {
-  InitWindowTreeData(std::move(window_tree_host));
+  DCHECK(!window_tree_host);
+
+  // TODO: Clean up WindowTreeClientDelegate::OnEmbed API so that it passes
+  // no ownership of WindowTreeHostMus instance.
+  InitWindowTreeData(nullptr);
   initialized_windows_count_++;
 
   // Open the next window until the requested number of windows is reached.

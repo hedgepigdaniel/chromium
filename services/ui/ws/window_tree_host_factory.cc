@@ -8,6 +8,7 @@
 #include "services/ui/ws/display.h"
 #include "services/ui/ws/display_binding.h"
 #include "services/ui/ws/window_server.h"
+#include "services/ui/ws/window_tree.h"
 
 namespace ui {
 namespace ws {
@@ -40,6 +41,27 @@ void WindowTreeHostFactory::CreateWindowTreeHost(
 
   display::Display display(1, metrics.bounds_in_pixels);
   ws_display->SetDisplay(display);
+
+  ws_display->Init(metrics, std::move(display_binding));
+}
+
+void WindowTreeHostFactory::CreatePlatformWindow(
+    mojom::WindowTreeHostRequest tree_host_request,
+    Id transport_window_id) {
+  WindowTree* tree = window_server_->GetTreeForExternalWindowMode();
+  tree->WillCreateRootDisplay(transport_window_id);
+
+  Display* ws_display = new Display(window_server_);
+
+  std::unique_ptr<DisplayBindingImpl> display_binding(
+      new DisplayBindingImpl(std::move(tree_host_request), ws_display, user_id_,
+                             nullptr, window_server_));
+
+  // Provide an initial size for the WindowTreeHost.
+  display::ViewportMetrics metrics;
+  metrics.bounds_in_pixels = gfx::Rect(1024, 768);
+  metrics.device_scale_factor = 1.0f;
+  metrics.ui_scale_factor = 1.0f;
 
   ws_display->Init(metrics, std::move(display_binding));
 }

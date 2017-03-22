@@ -110,6 +110,8 @@ static_library("lib") {
     "window_tree_factory.h",
     "window_tree_host_factory.cc",
     "window_tree_host_factory.h",
+    "window_tree_host_factory_registrar.cc",
+    "window_tree_host_factory_registrar.h",
   ]
 
   deps = [

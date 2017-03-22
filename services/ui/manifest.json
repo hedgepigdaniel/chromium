@@ -61,6 +61,9 @@
         ],
         "window_tree_host_factory": [
           "ui::mojom::WindowTreeHostFactory"
+        ],
+        "window_tree_host_factory_registrar": [
+          "ui::mojom::WindowTreeHostFactoryRegistrar"
         ]
       },
       "requires": {

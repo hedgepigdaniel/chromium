@@ -40,6 +40,7 @@
 #include "services/ui/ws/window_tree_binding.h"
 #include "services/ui/ws/window_tree_factory.h"
 #include "services/ui/ws/window_tree_host_factory.h"
+#include "services/ui/ws/window_tree_host_factory_registrar.h"
 #include "ui/base/platform_window_defaults.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_paths.h"
@@ -207,7 +208,8 @@ bool Service::OnConnect(const service_manager::ServiceInfo& remote_info,
   registry->AddInterface<mojom::IMEServer>(this);
   registry->AddInterface<mojom::UserAccessManager>(this);
   registry->AddInterface<mojom::UserActivityMonitor>(this);
-  registry->AddInterface<WindowTreeHostFactory>(this);
+  registry->AddInterface<mojom::WindowTreeHostFactory>(this);
+  registry->AddInterface<mojom::WindowTreeHostFactoryRegistrar>(this);
   registry->AddInterface<mojom::WindowManagerWindowTreeFactory>(this);
   registry->AddInterface<mojom::WindowTreeFactory>(this);
   registry
@@ -353,6 +355,15 @@ void Service::Create(const service_manager::Identity& remote_identity,
         window_server_.get(), remote_identity.user_id()));
   }
   user_state->window_tree_host_factory->AddBinding(std::move(request));
+}
+
+void Service::Create(const service_manager::Identity& remote_identity,
+                     mojom::WindowTreeHostFactoryRegistrarRequest request) {
+  AddUserIfNecessary(remote_identity);
+  mojo::MakeStrongBinding(base::MakeUnique<ws::WindowTreeHostFactoryRegistrar>(
+                              window_server_.get(), remote_identity.user_id()),
+                          std::move(request));
+  window_server_->SetInExternalWindowMode();
 }
 
 void Service::Create(
