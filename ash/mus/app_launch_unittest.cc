@@ -14,8 +14,10 @@
 namespace ash {
 namespace mus {
 
-void RunCallback(bool* success, const base::Closure& callback, bool result) {
-  *success = result;
+void RunCallback(uint64_t* root_window_count,
+                 const base::Closure& callback,
+                 uint64_t result) {
+  *root_window_count = result;
   callback.Run();
 }
 
@@ -41,12 +43,12 @@ TEST_F(AppLaunchTest, TestQuickLaunch) {
   connector()->BindInterface(ui::mojom::kServiceName, &test_interface);
 
   base::RunLoop run_loop;
-  bool success = false;
-  test_interface->EnsureClientHasDrawnWindow(
+  uint64_t root_window_count = 0;
+  test_interface->EnsureClientHasDrawnRootWindows(
       mash::quick_launch::mojom::kServiceName,
-      base::Bind(&RunCallback, &success, run_loop.QuitClosure()));
+      base::Bind(&RunCallback, &root_window_count, run_loop.QuitClosure()));
   run_loop.Run();
-  EXPECT_TRUE(success);
+  EXPECT_EQ(1u, root_window_count);
 }
 
 }  // namespace mus

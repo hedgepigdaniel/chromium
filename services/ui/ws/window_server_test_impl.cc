@@ -22,27 +22,43 @@ WindowServerTestImpl::~WindowServerTestImpl() {}
 
 void WindowServerTestImpl::OnWindowPaint(
     const std::string& name,
-    const EnsureClientHasDrawnWindowCallback& cb,
+    const EnsureClientHasDrawnRootWindowsCallback& cb,
     ServerWindow* window) {
   WindowTree* tree = window_server_->GetTreeWithClientName(name);
   if (!tree)
     return;
   if (tree->HasRoot(window) && window->compositor_frame_sink_manager()) {
-    cb.Run(true);
-    window_server_->SetPaintCallback(base::Callback<void(ServerWindow*)>());
+    painted_window_roots_[name]++;
+    if (painted_window_roots_[name] == tree->roots().size()) {
+      painted_window_roots_.erase(name);
+      cb.Run(tree->roots().size());
+      window_server_->SetPaintCallback(base::Callback<void(ServerWindow*)>());
+    }
   }
 }
 
-void WindowServerTestImpl::EnsureClientHasDrawnWindow(
+void WindowServerTestImpl::EnsureClientHasDrawnRootWindows(
     const std::string& client_name,
-    const EnsureClientHasDrawnWindowCallback& callback) {
+    const EnsureClientHasDrawnRootWindowsCallback& callback) {
+  if (painted_window_roots_.find(client_name) != painted_window_roots_.end()) {
+    LOG(ERROR) << "EnsureClientHasDrawnRootWindows is already being executed "
+                  "for that client name.";
+    callback.Run(0);
+    return;
+  }
+
+  painted_window_roots_[client_name] = 0;
   WindowTree* tree = window_server_->GetTreeWithClientName(client_name);
   if (tree) {
     for (const ServerWindow* window : tree->roots()) {
       if (window->compositor_frame_sink_manager()) {
-        callback.Run(true);
-        return;
+        painted_window_roots_[client_name]++;
       }
+    }
+    if (painted_window_roots_[client_name] == tree->roots().size()) {
+      painted_window_roots_.erase(client_name);
+      callback.Run(tree->roots().size());
+      return;
     }
   }
 
