@@ -27,6 +27,10 @@ class AURA_EXPORT WindowTreeClientDelegate {
   // InterfaceRequest.
   virtual void OnEmbed(std::unique_ptr<WindowTreeHostMus> window_tree_host) = 0;
 
+  // Called when the application implementing this interface is embedded and
+  // uses external window mode.
+  virtual void OnEmbedRootReady(WindowTreeHostMus* window_tree_host);
+
   // Sent when another app is embedded in |root| (one of the roots of the
   // connection). Afer this call |root| is deleted. If the associated
   // WindowTreeClient was created from a WindowTreeClientRequest then

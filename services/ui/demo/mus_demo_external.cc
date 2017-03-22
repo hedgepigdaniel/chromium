@@ -66,29 +66,20 @@ void MusDemoExternal::OnStartImpl() {
   // aura::GetDeviceScaleFactorFromDisplay().
   AddPrimaryDisplay(display::Display(0));
 
-  // TODO(tonikitoo,fwang): New windows can be launched without need to wait
-  // the respective ::OnEmbed call of the previous instance.
-  OpenNewWindow();
+  for (size_t i = 0; i < number_of_windows_; ++i)
+    OpenNewWindow(i);
 }
 
-void MusDemoExternal::OpenNewWindow() {
+void MusDemoExternal::OpenNewWindow(size_t window_index) {
   AppendWindowTreeData(base::MakeUnique<WindowTreeDataExternal>(
-      window_tree_client(),
-      GetSquareSizeForWindow(initialized_windows_count_)));
+      window_tree_client(), GetSquareSizeForWindow(window_index)));
 }
 
-void MusDemoExternal::OnEmbed(
-    std::unique_ptr<aura::WindowTreeHostMus> window_tree_host) {
-  DCHECK(!window_tree_host);
-
-  // TODO: Clean up WindowTreeClientDelegate::OnEmbed API so that it passes
-  // no ownership of WindowTreeHostMus instance.
-  InitWindowTreeData(nullptr);
-  initialized_windows_count_++;
-
-  // Open the next window until the requested number of windows is reached.
-  if (initialized_windows_count_ < number_of_windows_)
-    OpenNewWindow();
+void MusDemoExternal::OnEmbedRootReady(
+    aura::WindowTreeHostMus* window_tree_host) {
+  DCHECK(window_tree_host);
+  auto window_tree_data = FindWindowTreeData(window_tree_host);
+  (*window_tree_data)->Init();
 }
 
 void MusDemoExternal::OnEmbedRootDestroyed(

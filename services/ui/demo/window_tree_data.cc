@@ -66,13 +66,9 @@ aura::Window* WindowTreeData::bitmap_window() {
   return window_tree_host_->window()->children()[0];
 }
 
-void WindowTreeData::Init(
-    std::unique_ptr<aura::WindowTreeHostMus> window_tree_host) {
-  if (window_tree_host) {
-    window_tree_host->InitHost();
-    window_tree_host->Show();
-    SetWindowTreeHost(std::move(window_tree_host));
-  }
+void WindowTreeData::Init() {
+  DCHECK(window_tree_host_);
+  DCHECK(!IsInitialized());
 
   // Initialize the window for the bitmap.
   window_delegate_ = new aura_extra::ImageWindowDelegate();
