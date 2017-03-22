@@ -38,5 +38,8 @@ interface WindowTreeHostFactory {
   // Creates a new WindowTreeHost in 'external window mode'.
   // One WindowTree/WindowTreeClient pair can serve one or more WindowTreeHost
   // instances.
-  CreatePlatformWindow(WindowTreeHost& window_tree_host, uint32 client_id);
+  CreatePlatformWindow(WindowTreeHost& window_tree_host,
+                       uint32 client_id,
+                       map<string, array<uint8>> properties);
+
 };

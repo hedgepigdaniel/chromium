@@ -138,6 +138,7 @@ static_library("lib") {
     "//services/ui/common:server_gpu",
     "//services/ui/display",
     "//services/ui/public/interfaces",
+    "//services/ui/public/cpp:internal",
     "//ui/base",
     "//ui/display",
     "//ui/events",

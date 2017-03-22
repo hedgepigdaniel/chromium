@@ -1846,7 +1846,7 @@ std::unique_ptr<WindowPortMus> WindowTreeClient::CreateWindowPortForTopLevel(
     // Ends up calling back to client side, aura::WindowTreeClient::OnEmbed.
     ui::mojom::WindowTreeHostPtr host;
     window_tree_host_factory_ptr_->CreatePlatformWindow(
-        MakeRequest(&host), window_port->server_id());
+        MakeRequest(&host), window_port->server_id(), transport_properties);
   } else {
     const uint32_t change_id =
         ScheduleInFlightChange(base::MakeUnique<CrashInFlightChange>(

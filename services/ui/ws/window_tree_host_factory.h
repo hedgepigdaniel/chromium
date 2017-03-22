@@ -25,9 +25,11 @@ class WindowTreeHostFactory : public mojom::WindowTreeHostFactory {
   void AddBinding(mojom::WindowTreeHostFactoryRequest request);
 
  private:
-  // mojom::WindowTreeHostFactory implementation.
+  using TransportProperties =
+      std::unordered_map<std::string, std::vector<uint8_t>>;
+
   void CreatePlatformWindow(mojom::WindowTreeHostRequest tree_host_request,
-                            Id client_id) override;
+      Id transport_window_id, const TransportProperties& transport_properties) override;
 
   WindowServer* window_server_;
   const UserId user_id_;
