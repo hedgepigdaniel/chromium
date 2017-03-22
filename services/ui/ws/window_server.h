@@ -27,6 +27,7 @@
 #include "services/ui/ws/user_id_tracker.h"
 #include "services/ui/ws/user_id_tracker_observer.h"
 #include "services/ui/ws/window_manager_window_tree_factory_set.h"
+#include "services/ui/ws/window_tree_host_factory.h"
 
 namespace ui {
 namespace ws {
@@ -100,6 +101,8 @@ class WindowServer : public ServerWindowDelegate,
 
   WindowTree* GetTreeWithClientName(const std::string& client_name);
 
+  WindowTree* GetTreeForExternalWindowMode();
+
   size_t num_trees() const { return tree_map_.size(); }
 
   // Returns the Window identified by |id|.
@@ -136,11 +139,20 @@ class WindowServer : public ServerWindowDelegate,
     return &window_manager_window_tree_factory_set_;
   }
 
+  void set_window_tree_host_factory(
+      std::unique_ptr<WindowTreeHostFactory> factory) {
+    DCHECK(factory);
+    window_tree_host_factory_ = std::move(factory);
+  }
+
   // Sets focus to |window|. Returns true if |window| already has focus, or
   // focus was successfully changed. Returns |false| if |window| is not a valid
   // window to receive focus.
   bool SetFocusedWindow(ServerWindow* window);
   ServerWindow* GetFocusedWindow();
+
+  void SetInExternalWindowMode() { in_external_window_mode = true; }
+  bool IsInExternalWindowMode() const { return in_external_window_mode; }
 
   void SetHighContrastMode(const UserId& user, bool enabled);
 
@@ -380,12 +392,16 @@ class WindowServer : public ServerWindowDelegate,
 
   WindowManagerWindowTreeFactorySet window_manager_window_tree_factory_set_;
 
+  std::unique_ptr<WindowTreeHostFactory> window_tree_host_factory_;
+
   cc::SurfaceId root_surface_id_;
 
   mojo::Binding<cc::mojom::DisplayCompositorClient>
       display_compositor_client_binding_;
   // State for rendering into a Surface.
   cc::mojom::DisplayCompositorPtr display_compositor_;
+
+  bool in_external_window_mode = false;
 
   DISALLOW_COPY_AND_ASSIGN(WindowServer);
 };

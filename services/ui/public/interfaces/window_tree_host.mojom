@@ -17,9 +17,31 @@ interface WindowTreeHost {
   SetTitle(string title);
 };
 
+// WindowTreeHostFactoryRegistrar is the entry point to obtain a
+// WindowTreeHostFactory instance in 'external window mode'.
+// Callers also obtain a mojo handle to the unique ws::WindowTree instance,
+// on the server-side.
+//
+// NOTE: WindowTreeHostFactoryRegistrar::Register and
+// WindowTreeHostFactory::CreatePlatformWindow are put on separate interfaces,
+// so that the interface containing ::CreatePlatformWindow is obtained by
+// calling ::Register. That eliminates the possibility of ::CreatePlatformWindow
+// being called before ::Register.
+interface WindowTreeHostFactoryRegistrar {
+   Register(WindowTreeHostFactory& window_tree_host_factory,
+            WindowTree& tree_request,
+            WindowTreeClient client);
+};
+
+// WindowTreeHostFactory triggers the creation of WindowTreeHost instances.
 interface WindowTreeHostFactory {
   // Creates a new WindowTreeHost. |tree_client| is queried for the
   // WindowManager.
   CreateWindowTreeHost(WindowTreeHost& window_tree_host,
                        WindowTreeClient tree_client);
+
+  // Creates a new WindowTreeHost in 'external window mode'.
+  // One WindowTree/WindowTreeClient pair can serve one or more WindowTreeHost
+  // instances.
+  CreatePlatformWindow(WindowTreeHost& window_tree_host, uint32 client_id);
 };

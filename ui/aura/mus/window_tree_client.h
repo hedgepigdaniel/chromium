@@ -22,6 +22,7 @@
 #include "mojo/public/cpp/bindings/associated_binding.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "services/ui/public/interfaces/window_tree.mojom.h"
+#include "services/ui/public/interfaces/window_tree_host.mojom.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/client/transient_window_client_observer.h"
 #include "ui/aura/mus/capture_synchronizer_delegate.h"
@@ -111,6 +112,9 @@ class AURA_EXPORT WindowTreeClient
 
   // Establishes the connection by way of the WindowTreeFactory.
   void ConnectViaWindowTreeFactory();
+
+  // Establishes the connection by way of the WindowTreeFactoryHost.
+  void ConnectViaWindowTreeHostFactory();
 
   // Establishes the connection by way of WindowManagerWindowTreeFactory.
   void ConnectAsWindowManager();
@@ -237,6 +241,10 @@ class AURA_EXPORT WindowTreeClient
       const cc::FrameSinkId& frame_sink_id = cc::FrameSinkId(),
       const base::Optional<cc::LocalSurfaceId>& local_surface_id =
           base::nullopt);
+
+  void ConfigureWindowDataFromServer(WindowTreeHostMus* window_tree_host,
+      const ui::mojom::WindowData& window_data,
+      const base::Optional<cc::LocalSurfaceId>& local_surface_id);
 
   WindowMus* NewWindowFromWindowData(WindowMus* parent,
                                      const ui::mojom::WindowData& window_data);
@@ -577,6 +585,8 @@ class AURA_EXPORT WindowTreeClient
 
   bool has_pointer_watcher_ = false;
 
+  bool in_external_window_mode_ = false;
+
   // The current change id for the client.
   uint32_t current_move_loop_change_ = 0u;
 
@@ -607,6 +617,8 @@ class AURA_EXPORT WindowTreeClient
 
   // Set to true once OnWmDisplayAdded() is called.
   bool got_initial_displays_ = false;
+
+  ui::mojom::WindowTreeHostFactoryPtr window_tree_host_factory_ptr_;
 
   base::WeakPtrFactory<WindowTreeClient> weak_factory_;
 

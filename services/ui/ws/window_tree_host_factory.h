@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "mojo/public/cpp/bindings/binding_set.h"
+#include "services/ui/common/types.h"
 #include "services/ui/public/interfaces/window_tree_host.mojom.h"
 #include "services/ui/ws/user_id.h"
 
@@ -27,6 +28,8 @@ class WindowTreeHostFactory : public mojom::WindowTreeHostFactory {
   // mojom::WindowTreeHostFactory implementation.
   void CreateWindowTreeHost(mojom::WindowTreeHostRequest host,
                             mojom::WindowTreeClientPtr tree_client) override;
+  void CreatePlatformWindow(mojom::WindowTreeHostRequest tree_host_request,
+                            Id client_id) override;
 
   WindowServer* window_server_;
   const UserId user_id_;

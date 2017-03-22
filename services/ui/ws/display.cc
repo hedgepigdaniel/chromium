@@ -197,7 +197,29 @@ void Display::SetTitle(const std::string& title) {
   platform_display_->SetTitle(base::UTF8ToUTF16(title));
 }
 
+void Display::InitDisplayRoot() {
+  DCHECK(window_server_->IsInExternalWindowMode());
+  DCHECK(binding_);
+
+  external_mode_root_ = base::MakeUnique<WindowManagerDisplayRoot>(this);
+  // TODO(tonikitoo): Code still has assumptions that even in external window
+  // mode make 'window_manager_display_root_map_' needed.
+  window_manager_display_root_map_[service_manager::mojom::kRootUserID] =
+      external_mode_root_.get();
+
+  ServerWindow* server_window = external_mode_root_->root();
+  WindowTree* window_tree = window_server_->GetTreeForExternalWindowMode();
+  window_tree->AddRoot(server_window);
+  window_tree->DoOnEmbed(nullptr /*mojom::WindowTreePtr*/, server_window);
+
+  display_manager()->OnDisplayUpdate(display_);
+}
+
 void Display::InitWindowManagerDisplayRoots() {
+  // Tests can create ws::Display instances directly, by-passing
+  // WindowTreeHostFactory.
+  // TODO(tonikitoo): Check if with the introduction of 'external window mode'
+  // this path is still needed.
   if (binding_) {
     std::unique_ptr<WindowManagerDisplayRoot> display_root_ptr(
         new WindowManagerDisplayRoot(this));
@@ -267,12 +289,16 @@ EventSink* Display::GetEventSink() {
 
 void Display::OnAcceleratedWidgetAvailable() {
   display_manager()->OnDisplayAcceleratedWidgetAvailable(this);
-  InitWindowManagerDisplayRoots();
+
+  if (window_server_->IsInExternalWindowMode())
+    InitDisplayRoot();
+  else
+    InitWindowManagerDisplayRoots();
 }
 
 void Display::OnNativeCaptureLost() {
   WindowManagerDisplayRoot* display_root = GetActiveWindowManagerDisplayRoot();
-  if (display_root)
+  if (display_root && display_root->window_manager_state())
     display_root->window_manager_state()->SetCapture(nullptr, kInvalidClientId);
 }
 
@@ -357,7 +383,7 @@ void Display::OnFocusChanged(FocusControllerChangeSource change_source,
 
   // WindowManagers are always notified of focus changes.
   WindowManagerDisplayRoot* display_root = GetActiveWindowManagerDisplayRoot();
-  if (display_root) {
+  if (display_root && display_root->window_manager_state()) {
     WindowTree* wm_tree = display_root->window_manager_state()->window_tree();
     if (wm_tree != owning_tree_old && wm_tree != embedded_tree_old &&
         wm_tree != owning_tree_new && wm_tree != embedded_tree_new) {
@@ -380,8 +406,14 @@ void Display::OnWindowManagerWindowTreeFactoryReady(
 }
 
 EventDispatchDetails Display::OnEventFromSource(Event* event) {
+  // TODO(tonikitoo): Current WindowManagerDisplayRoot class is misnamed, since
+  // in external window mode a non-WindowManager specific 'DisplayRoot' is also
+  // needed.
+  // Bits of WindowManagerState also should be factored out and made available
+  // in external window mode, so that event handling is functional.
+  // htts://crbug.com/701129
   WindowManagerDisplayRoot* display_root = GetActiveWindowManagerDisplayRoot();
-  if (display_root) {
+  if (display_root && display_root->window_manager_state()) {
     WindowManagerState* wm_state = display_root->window_manager_state();
     wm_state->ProcessEvent(*event, GetId());
   }
