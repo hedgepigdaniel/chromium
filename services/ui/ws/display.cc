@@ -229,10 +229,12 @@ void Display::InitWindowManagerDisplayRoots() {
     // id works.
     window_manager_display_root_map_[service_manager::mojom::kRootUserID] =
         display_root_ptr.get();
-    WindowTree* window_tree = binding_->CreateWindowTree(display_root->root());
+    WindowTree* window_tree = window_server_->GetTreeForExternalWindowMode();
     display_root->window_manager_state_ = window_tree->window_manager_state();
     window_tree->window_manager_state()->AddWindowManagerDisplayRoot(
         std::move(display_root_ptr));
+    window_tree->AddRoot(display_root->root());
+    window_tree->DoOnEmbed(nullptr /*mojom::WindowTreePtr*/, display_root->root());
   } else {
     CreateWindowManagerDisplayRootsFromFactories();
   }
@@ -291,7 +293,9 @@ EventSink* Display::GetEventSink() {
 void Display::OnAcceleratedWidgetAvailable() {
   display_manager()->OnDisplayAcceleratedWidgetAvailable(this);
 
-  if (window_server_->IsInExternalWindowMode())
+  // TODO(tonikitoo): The 0-check below is experimental in order to get basic
+  // events working (mouse mostly).
+  if (window_server_->IsInExternalWindowMode() && 0)
     InitDisplayRoot();
   else
     InitWindowManagerDisplayRoots();
