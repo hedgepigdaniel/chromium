@@ -7,7 +7,7 @@ module ui.mojom;
 import "ui/events/mojo/event.mojom";
 
 interface WindowServerTest {
-  EnsureClientHasDrawnWindow(string client_name) => (bool success);
+  EnsureClientHasDrawnRootWindows(string client_name) => (uint64 root_window_count);
 
   // Takes an event and dispatches it as if it came from the native platform.
   // Returns false on bad |display_id| or |event|; returns true if it reaches
