@@ -56,9 +56,11 @@ Display::~Display() {
   } else if (!window_manager_display_root_map_.empty()) {
     // If there is a |binding_| then the tree was created specifically for this
     // display (which corresponds to a WindowTreeHost).
-    window_server_->DestroyTree(window_manager_display_root_map_.begin()
-                                    ->second->window_manager_state()
-                                    ->window_tree());
+    WindowManagerDisplayRoot* display_root =
+        window_manager_display_root_map_.begin()->second;
+    if (display_root->window_manager_state())
+      window_server_->DestroyTree(
+          display_root->window_manager_state()->window_tree());
   }
 }
 

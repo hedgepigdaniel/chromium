@@ -138,6 +138,7 @@ class TestWindowTreeClient : public mojom::WindowTreeClient,
   }
 
   mojom::WindowTree* tree() { return tree_.get(); }
+  void set_tree(mojom::WindowTreePtr tree) { tree_ = std::move(tree); }
   TestChangeTracker* tracker() { return &tracker_; }
   Id root_window_id() const { return root_window_id_; }
 
@@ -165,7 +166,7 @@ class TestWindowTreeClient : public mojom::WindowTreeClient,
 
   // Runs a nested MessageLoop until OnEmbed() has been encountered.
   void WaitForOnEmbed() {
-    if (tree_)
+    if (tree_ready_)
       return;
     embed_run_loop_ = base::MakeUnique<base::RunLoop>();
     embed_run_loop_->Run();
@@ -286,7 +287,9 @@ class TestWindowTreeClient : public mojom::WindowTreeClient,
     // TODO(sky): add coverage of |focused_window_id|.
     ASSERT_TRUE(root);
     root_window_id_ = root->window_id;
-    tree_ = std::move(tree);
+    if (!tree_)
+      set_tree(std::move(tree));
+    tree_ready_ = true;
     client_id_ = client_id;
     tracker()->OnEmbed(client_id, std::move(root), drawn, frame_sink_id);
     if (embed_run_loop_)
@@ -520,6 +523,7 @@ class TestWindowTreeClient : public mojom::WindowTreeClient,
   TestChangeTracker tracker_;
 
   mojom::WindowTreePtr tree_;
+  bool tree_ready_ = false;
 
   // If non-null we're waiting for OnEmbed() using this RunLoop.
   std::unique_ptr<base::RunLoop> embed_run_loop_;
@@ -689,15 +693,19 @@ class WindowTreeClientTest : public WindowServerServiceTestBase {
 
     WindowServerServiceTestBase::SetUp();
 
-    mojom::WindowTreeHostFactoryPtr factory;
-    connector()->BindInterface(ui::mojom::kServiceName, &factory);
+    ui::mojom::WindowTreeHostFactoryRegistrarPtr factory_registrar;
+    connector()->BindInterface(ui::mojom::kServiceName, &factory_registrar);
 
+    mojom::WindowTreeHostFactoryPtr factory;
+    ui::mojom::WindowTreePtr window_tree;
     mojom::WindowTreeClientPtr tree_client_ptr;
     wt_client1_ = base::MakeUnique<TestWindowTreeClient>();
     wt_client1_->Bind(MakeRequest(&tree_client_ptr));
-
-    factory->CreateWindowTreeHost(MakeRequest(&host_),
-                                  std::move(tree_client_ptr));
+    factory_registrar->Register(MakeRequest(&factory),
+                                MakeRequest(&window_tree),
+                                std::move(tree_client_ptr));
+    wt_client1_->set_tree(std::move(window_tree));
+    factory->CreatePlatformWindow(MakeRequest(&host_), BuildWindowId(1, 0));
 
     // Next we should get an embed call on the "window manager" client.
     wt_client1_->WaitForOnEmbed();

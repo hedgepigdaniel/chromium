@@ -26,8 +26,6 @@ class WindowTreeHostFactory : public mojom::WindowTreeHostFactory {
 
  private:
   // mojom::WindowTreeHostFactory implementation.
-  void CreateWindowTreeHost(mojom::WindowTreeHostRequest host,
-                            mojom::WindowTreeClientPtr tree_client) override;
   void CreatePlatformWindow(mojom::WindowTreeHostRequest tree_host_request,
                             Id client_id) override;
 

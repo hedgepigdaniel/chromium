@@ -73,7 +73,6 @@ class Service
       public service_manager::InterfaceFactory<
           mojom::WindowManagerWindowTreeFactory>,
       public service_manager::InterfaceFactory<mojom::WindowTreeFactory>,
-      public service_manager::InterfaceFactory<mojom::WindowTreeHostFactory>,
       public service_manager::InterfaceFactory<
           mojom::WindowTreeHostFactoryRegistrar>,
       public service_manager::InterfaceFactory<
@@ -154,10 +153,6 @@ class Service
   // service_manager::InterfaceFactory<mojom::WindowTreeFactory>:
   void Create(const service_manager::Identity& remote_identity,
               mojom::WindowTreeFactoryRequest request) override;
-
-  // service_manager::InterfaceFactory<mojom::WindowTreeHostFactory>:
-  void Create(const service_manager::Identity& remote_identity,
-              mojom::WindowTreeHostFactoryRequest request) override;
 
   // service_manager::InterfaceFactory<mojom::WindowTreeHostFactoryRegistrar>:
   void Create(const service_manager::Identity& remote_identity,

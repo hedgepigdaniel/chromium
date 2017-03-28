@@ -35,11 +35,6 @@ interface WindowTreeHostFactoryRegistrar {
 
 // WindowTreeHostFactory triggers the creation of WindowTreeHost instances.
 interface WindowTreeHostFactory {
-  // Creates a new WindowTreeHost. |tree_client| is queried for the
-  // WindowManager.
-  CreateWindowTreeHost(WindowTreeHost& window_tree_host,
-                       WindowTreeClient tree_client);
-
   // Creates a new WindowTreeHost in 'external window mode'.
   // One WindowTree/WindowTreeClient pair can serve one or more WindowTreeHost
   // instances.
