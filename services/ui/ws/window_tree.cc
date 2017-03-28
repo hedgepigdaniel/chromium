@@ -232,14 +232,14 @@ void WindowTree::PrepareForWindowServerShutdown() {
 }
 
 void WindowTree::AddRoot(const ServerWindow* root) {
-  DCHECK(pending_client_id_ != kInvalidClientId);
+  DCHECK(pending_client_window_id_ != kInvalidClientId);
 
-  const ClientWindowId client_window_id(pending_client_id_);
+  const ClientWindowId client_window_id(pending_client_window_id_);
   DCHECK_EQ(0u, client_id_to_window_id_map_.count(client_window_id));
 
   client_id_to_window_id_map_[client_window_id] = root->id();
   window_id_to_client_id_map_[root->id()] = client_window_id;
-  pending_client_id_ = kInvalidClientId;
+  pending_client_window_id_ = kInvalidClientId;
 
   roots_.insert(root);
 
