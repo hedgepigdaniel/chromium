@@ -13,7 +13,8 @@
         "mus_ws_unittests_app": [ "ui:window_tree_client" ],
         "ui": [
           "window_manager",
-          "window_tree_host_factory"
+          "window_tree_host_factory",
+          "window_tree_host_factory_registrar"
         ]
       }
     }

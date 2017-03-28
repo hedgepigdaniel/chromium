@@ -24,27 +24,6 @@ void WindowTreeHostFactory::AddBinding(
   bindings_.AddBinding(this, std::move(request));
 }
 
-void WindowTreeHostFactory::CreateWindowTreeHost(
-    mojom::WindowTreeHostRequest host,
-    mojom::WindowTreeClientPtr tree_client) {
-  Display* ws_display = new Display(window_server_);
-
-  std::unique_ptr<DisplayBindingImpl> display_binding(
-      new DisplayBindingImpl(std::move(host), ws_display, user_id_,
-                             std::move(tree_client), window_server_));
-
-  // Provide an initial size for the WindowTreeHost.
-  display::ViewportMetrics metrics;
-  metrics.bounds_in_pixels = gfx::Rect(1024, 768);
-  metrics.device_scale_factor = 1.0f;
-  metrics.ui_scale_factor = 1.0f;
-
-  display::Display display(1, metrics.bounds_in_pixels);
-  ws_display->SetDisplay(display);
-
-  ws_display->Init(metrics, std::move(display_binding));
-}
-
 void WindowTreeHostFactory::CreatePlatformWindow(
     mojom::WindowTreeHostRequest tree_host_request,
     Id transport_window_id) {
