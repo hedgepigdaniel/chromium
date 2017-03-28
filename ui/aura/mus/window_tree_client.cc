@@ -931,6 +931,8 @@ void WindowTreeClient::OnEmbed(
     const cc::FrameSinkId& frame_sink_id,
     const base::Optional<cc::LocalSurfaceId>& local_surface_id) {
   if (in_external_window_mode_) {
+    client_id_ = client_id;
+
     // No need to set 'tree_ptr_' whether it was already set during
     // ConnectViaWindowManagerHostFactory.
     DCHECK(tree_ptr_);
