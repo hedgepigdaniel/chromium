@@ -705,7 +705,9 @@ class WindowTreeClientTest : public WindowServerServiceTestBase {
                                 MakeRequest(&window_tree),
                                 std::move(tree_client_ptr));
     wt_client1_->set_tree(std::move(window_tree));
-    factory->CreatePlatformWindow(MakeRequest(&host_), BuildWindowId(1, 0));
+    std::unordered_map<std::string, std::vector<uint8_t>> transport_properties;
+    factory->CreatePlatformWindow(MakeRequest(&host_), BuildWindowId(1, 0),
+                                  transport_properties);
 
     // Next we should get an embed call on the "window manager" client.
     wt_client1_->WaitForOnEmbed();
