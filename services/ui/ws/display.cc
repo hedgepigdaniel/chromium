@@ -304,6 +304,19 @@ void Display::OnNativeCaptureLost() {
     display_root->window_manager_state()->SetCapture(nullptr, kInvalidClientId);
 }
 
+void Display::OnBoundsChangedImpl(const gfx::Rect& new_bounds) {
+  root_->SetBounds(new_bounds, allocator_.GenerateId());
+  for (auto& pair : window_manager_display_root_map_)
+    pair.second->root()->SetBounds(new_bounds, allocator_.GenerateId());
+}
+
+void Display::OnBoundsChanged(const gfx::Rect& new_bounds) {
+  if (root_->bounds().size() == new_bounds.size())
+    return;
+
+  OnBoundsChangedImpl(new_bounds);
+}
+
 void Display::OnViewportMetricsChanged(
     const display::ViewportMetrics& metrics) {
   platform_display_->UpdateViewportMetrics(metrics);
@@ -311,10 +324,7 @@ void Display::OnViewportMetricsChanged(
   if (root_->bounds().size() == metrics.bounds_in_pixels.size())
     return;
 
-  gfx::Rect new_bounds(metrics.bounds_in_pixels.size());
-  root_->SetBounds(new_bounds, allocator_.GenerateId());
-  for (auto& pair : window_manager_display_root_map_)
-    pair.second->root()->SetBounds(new_bounds, allocator_.GenerateId());
+  OnBoundsChangedImpl(gfx::Rect(metrics.bounds_in_pixels.size()));
 }
 
 ServerWindow* Display::GetActiveRootWindow() {

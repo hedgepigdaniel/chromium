@@ -187,6 +187,7 @@ class Display : public PlatformDisplayDelegate,
   EventSink* GetEventSink() override;
   void OnAcceleratedWidgetAvailable() override;
   void OnNativeCaptureLost() override;
+  void OnBoundsChanged(const gfx::Rect& new_bounds) override;
 
   // FocusControllerDelegate:
   bool CanHaveActiveChildren(ServerWindow* window) const override;
@@ -207,6 +208,8 @@ class Display : public PlatformDisplayDelegate,
 
   // EventSink:
   EventDispatchDetails OnEventFromSource(Event* event) override;
+
+  void OnBoundsChangedImpl(const gfx::Rect& new_bounds);
 
   std::unique_ptr<DisplayBinding> binding_;
   WindowServer* const window_server_;
