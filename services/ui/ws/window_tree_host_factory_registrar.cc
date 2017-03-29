@@ -4,7 +4,7 @@
 
 #include "services/ui/ws/window_tree_host_factory_registrar.h"
 
-#include "services/ui/ws/window_manager_access_policy.h"
+#include "services/ui/ws/default_access_policy.h"
 #include "services/ui/ws/window_server.h"
 #include "services/ui/ws/window_tree.h"
 #include "services/ui/ws/window_tree_host_factory.h"
@@ -31,7 +31,7 @@ void WindowTreeHostFactoryRegistrar::Register(
   // FIXME(tonikitoo,msisov,fwang): Do we need our own AccessPolicy?
   std::unique_ptr<ws::WindowTree> tree(
       new ws::WindowTree(window_server_, user_id_, nullptr /*ServerWindow*/,
-                         base::WrapUnique(new WindowManagerAccessPolicy)));
+                         base::WrapUnique(new DefaultAccessPolicy())));
 
   std::unique_ptr<ws::DefaultWindowTreeBinding> tree_binding(
       new ws::DefaultWindowTreeBinding(tree.get(), window_server_,
