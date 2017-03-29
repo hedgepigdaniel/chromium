@@ -165,8 +165,11 @@ void PlatformDisplayDefault::OnBoundsChanged(const gfx::Rect& new_bounds) {
   if (new_bounds.size() == metrics_.bounds_in_pixels.size())
     return;
 
-  // TODO(tonikitoo): Handle the bounds changing in external window mode. The
-  // window should be resized by the WS and it shouldn't involve ScreenManager.
+  metrics_.bounds_in_pixels = new_bounds;
+  if (frame_generator_)
+    frame_generator_->OnWindowSizeChanged(new_bounds.size());
+
+  delegate_->OnBoundsChanged(new_bounds);
 }
 
 void PlatformDisplayDefault::OnDamageRect(const gfx::Rect& damaged_region) {
