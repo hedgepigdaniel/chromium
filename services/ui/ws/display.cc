@@ -298,8 +298,6 @@ EventSink* Display::GetEventSink() {
 void Display::OnAcceleratedWidgetAvailable() {
   display_manager()->OnDisplayAcceleratedWidgetAvailable(this);
 
-  // TODO(tonikitoo): The 0-check below is experimental in order to get basic
-  // events working (mouse mostly).
   if (window_server_->IsInExternalWindowMode())
     InitDisplayRoot();
   else
