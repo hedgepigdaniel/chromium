@@ -202,14 +202,21 @@ void Display::InitDisplayRoot() {
   DCHECK(window_server_->IsInExternalWindowMode());
   DCHECK(binding_);
 
-  external_mode_root_ = base::MakeUnique<WindowManagerDisplayRoot>(this);
+  std::unique_ptr<WindowManagerDisplayRoot> display_root_ptr(
+      new WindowManagerDisplayRoot(this));
   // TODO(tonikitoo): Code still has assumptions that even in external window
   // mode make 'window_manager_display_root_map_' needed.
   window_manager_display_root_map_[service_manager::mojom::kRootUserID] =
-      external_mode_root_.get();
+      display_root_ptr.get();
 
-  ServerWindow* server_window = external_mode_root_->root();
   WindowTree* window_tree = window_server_->GetTreeForExternalWindowMode();
+  ServerWindow* server_window = display_root_ptr->root();
+
+  external_mode_wm_state_ = base::MakeUnique<WindowManagerState>(window_tree);
+  display_root_ptr->window_manager_state_ = external_mode_wm_state_.get();
+  external_mode_wm_state_->AddWindowManagerDisplayRoot(
+      std::move(display_root_ptr));
+
   window_tree->AddRoot(server_window);
   window_tree->DoOnEmbed(nullptr /*mojom::WindowTreePtr*/, server_window);
 
@@ -229,12 +236,10 @@ void Display::InitWindowManagerDisplayRoots() {
     // id works.
     window_manager_display_root_map_[service_manager::mojom::kRootUserID] =
         display_root_ptr.get();
-    WindowTree* window_tree = window_server_->GetTreeForExternalWindowMode();
+    WindowTree* window_tree = binding_->CreateWindowTree(display_root->root());
     display_root->window_manager_state_ = window_tree->window_manager_state();
     window_tree->window_manager_state()->AddWindowManagerDisplayRoot(
         std::move(display_root_ptr));
-    window_tree->AddRoot(display_root->root());
-    window_tree->DoOnEmbed(nullptr /*mojom::WindowTreePtr*/, display_root->root());
   } else {
     CreateWindowManagerDisplayRootsFromFactories();
   }
@@ -295,7 +300,7 @@ void Display::OnAcceleratedWidgetAvailable() {
 
   // TODO(tonikitoo): The 0-check below is experimental in order to get basic
   // events working (mouse mostly).
-  if (window_server_->IsInExternalWindowMode() && 0)
+  if (window_server_->IsInExternalWindowMode())
     InitDisplayRoot();
   else
     InitWindowManagerDisplayRoots();
