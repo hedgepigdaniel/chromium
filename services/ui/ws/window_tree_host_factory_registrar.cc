@@ -46,14 +46,8 @@ void WindowTreeHostFactoryRegistrar::Register(
   // WindowTreeClient::OnEmbed call. In the particular flow though, WTC::OnEmbed
   // will not get called because the WindowTree instance was created above taking
   // 'nullptr' as the ServerWindow parameter, hence the WindowTree has no 'root' yet.
-  WindowTree* tree_ptr = tree.get();
   window_server_->AddTree(std::move(tree), std::move(tree_binding),
                           nullptr /*mojom::WindowTreePtr*/);
-
-  // TODO(tonikitoo): This 'ConfigureWindowManager' call is a rough attempt to get
-  // basic event handling (mostly mouse) working for external window mode.
-  tree_ptr->ConfigureWindowManager();
-
   window_server_->set_window_tree_host_factory(std::move(host_factory));
 }
 
