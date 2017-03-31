@@ -158,7 +158,8 @@ void X11EventSourceLibevent::RemoveXEventDispatcher(
 void X11EventSourceLibevent::ProcessXEvent(XEvent* xevent) {
   std::unique_ptr<ui::Event> translated_event = TranslateXEventToEvent(*xevent);
   if (translated_event) {
-    DispatchEvent(translated_event.get());
+    EventWithPlatformEvent ewxe = {translated_event.get(), xevent};
+    DispatchEvent(&ewxe);
   } else {
     // Only if we can't translate XEvent into ui::Event, try to dispatch XEvent
     // directly to XEventDispatchers.

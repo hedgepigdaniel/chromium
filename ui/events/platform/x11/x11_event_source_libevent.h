@@ -13,6 +13,13 @@
 
 namespace ui {
 
+class Event;
+
+struct EVENTS_EXPORT EventWithPlatformEvent {
+  Event* event;
+  PlatformEvent platform_event;
+};
+
 // Interface for classes that want to receive XEvent directly. Only used with
 // Ozone X11 currently and only events that can't be translated into ui::Events
 // are sent via this path.
