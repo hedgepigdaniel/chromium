@@ -279,6 +279,9 @@ class WindowTree : public mojom::WindowTree,
                             ServerWindow* target_window,
                             int64_t display_id);
 
+  WindowManagerState* AppendExternalModeWindowManagerState(
+      std::unique_ptr<WindowManagerState> window_manager_state);
+
  private:
   friend class test::WindowTreeTestApi;
 
@@ -591,6 +594,7 @@ class WindowTree : public mojom::WindowTree,
       window_manager_internal_client_binding_;
   mojom::WindowManager* window_manager_internal_;
   std::unique_ptr<WindowManagerState> window_manager_state_;
+  std::set<std::unique_ptr<WindowManagerState>> external_mode_wm_states_;
 
   std::unique_ptr<WaitingForTopLevelWindowInfo>
       waiting_for_top_level_window_info_;

@@ -231,8 +231,6 @@ class Display : public PlatformDisplayDelegate,
 
   WindowManagerDisplayRootMap window_manager_display_root_map_;
 
-  std::unique_ptr<WindowManagerState> external_mode_wm_state_;
-
   DISALLOW_COPY_AND_ASSIGN(Display);
 };
 

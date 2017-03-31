@@ -53,13 +53,24 @@ Display::~Display() {
     for (auto& pair : window_manager_display_root_map_)
       pair.second->window_manager_state()->OnDisplayDestroying(this);
   } else if (!window_manager_display_root_map_.empty()) {
-    // If there is a |binding_| then the tree was created specifically for this
-    // display (which corresponds to a WindowTreeHost).
+    // If there is a |binding_| then the tree was created specifically for one
+    // or more displays, which correspond to WindowTreeHosts.
     WindowManagerDisplayRoot* display_root =
         window_manager_display_root_map_.begin()->second;
-    if (display_root->window_manager_state())
-      window_server_->DestroyTree(
-          display_root->window_manager_state()->window_tree());
+    if (display_root->window_manager_state()) {
+      WindowTree* tree = display_root->window_manager_state()->window_tree();
+      ServerWindow* root = display_root->root();
+      if (tree) {
+        // Delete the window root corresponding to that display.
+        ClientWindowId root_id;
+        if (tree->IsWindowKnown(root, &root_id))
+          tree->DeleteWindow(root_id);
+
+        // Destroy the tree once all the roots have been removed.
+        if (tree->roots().empty())
+          window_server_->DestroyTree(tree);
+      }
+    }
   }
 }
 
@@ -212,9 +223,10 @@ void Display::InitDisplayRoot() {
   WindowTree* window_tree = window_server_->GetTreeForExternalWindowMode();
   ServerWindow* server_window = display_root_ptr->root();
 
-  external_mode_wm_state_ = base::MakeUnique<WindowManagerState>(window_tree);
-  display_root_ptr->window_manager_state_ = external_mode_wm_state_.get();
-  external_mode_wm_state_->AddWindowManagerDisplayRoot(
+  display_root_ptr->window_manager_state_ =
+      window_tree->AppendExternalModeWindowManagerState(
+          base::MakeUnique<WindowManagerState>(window_tree));
+  display_root_ptr->window_manager_state_->AddWindowManagerDisplayRoot(
       std::move(display_root_ptr));
 
   window_tree->AddRoot(server_window);
