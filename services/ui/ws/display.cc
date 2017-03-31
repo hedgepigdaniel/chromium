@@ -336,6 +336,20 @@ void Display::OnBoundsChanged(const gfx::Rect& new_bounds) {
   OnBoundsChangedImpl(new_bounds);
 }
 
+void Display::OnCloseRequest() {
+  DCHECK(window_server_->IsInExternalWindowMode());
+  DCHECK(binding_);
+
+  WindowTree* window_tree = window_server_->GetTreeForExternalWindowMode();
+  WindowManagerDisplayRoot* display_root =
+      window_manager_display_root_map_.begin()->second;
+  ServerWindow* server_window =
+      display_root->window_manager_state()->GetWindowManagerRoot(root_window());
+  ClientWindowId window_id;
+  if (window_tree && window_tree->IsWindowKnown(server_window, &window_id))
+    window_tree->client()->RequestClose(window_id.id);
+}
+
 void Display::OnViewportMetricsChanged(
     const display::ViewportMetrics& metrics) {
   platform_display_->UpdateViewportMetrics(metrics);

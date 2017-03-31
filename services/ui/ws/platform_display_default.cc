@@ -225,10 +225,12 @@ void PlatformDisplayDefault::DispatchEvent(ui::Event* event) {
 }
 
 void PlatformDisplayDefault::OnCloseRequest() {
-  // TODO(tonikitoo): Handle a close request in external window mode. The window
-  // should be closed by the WS and it shouldn't involve ScreenManager.
+#if !defined(USE_OZONE) || defined(CHROMEOS)
   const int64_t display_id = delegate_->GetDisplay().id();
   display::ScreenManager::GetInstance()->RequestCloseDisplay(display_id);
+#else
+  delegate_->OnCloseRequest();
+#endif
 }
 
 void PlatformDisplayDefault::OnClosed() {}

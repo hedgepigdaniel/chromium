@@ -40,6 +40,9 @@ class PlatformDisplayDelegate {
   // Called when the Display is resized.
   virtual void OnBoundsChanged(const gfx::Rect& new_bounds) = 0;
 
+  // Called when the Display is closed (external mode).
+  virtual void OnCloseRequest() = 0;
+
  protected:
   virtual ~PlatformDisplayDelegate() {}
 };
