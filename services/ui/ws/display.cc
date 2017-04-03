@@ -224,10 +224,14 @@ void Display::InitDisplayRoot() {
   WindowTree* window_tree = window_server_->GetTreeForExternalWindowMode();
   ServerWindow* server_window = display_root_ptr->root();
 
-  display_root_ptr->window_manager_state_ =
-      window_tree->AppendExternalModeWindowManagerState(
-          base::MakeUnique<WindowManagerState>(window_tree));
-  display_root_ptr->window_manager_state_->AddWindowManagerDisplayRoot(
+  std::unique_ptr<WindowManagerState> window_manager_state =
+      base::MakeUnique<WindowManagerState>(window_tree);
+  display_root_ptr->window_manager_state_ = window_manager_state.get();
+  window_tree->AddExternalModeWindowManagerState(
+      std::move(window_manager_state));
+
+  WindowManagerDisplayRoot* display_root = display_root_ptr.get();
+  display_root->window_manager_state_->AddWindowManagerDisplayRoot(
       std::move(display_root_ptr));
 
   window_tree->AddRoot(server_window);

@@ -280,7 +280,8 @@ class WindowTree : public mojom::WindowTree,
                             ServerWindow* target_window,
                             int64_t display_id);
 
-  WindowManagerState* AppendExternalModeWindowManagerState(
+  // TODO(tonikitoo,msisov,fwang): Add a comment.
+  void AddExternalModeWindowManagerState(
       std::unique_ptr<WindowManagerState> window_manager_state);
 
  private:
