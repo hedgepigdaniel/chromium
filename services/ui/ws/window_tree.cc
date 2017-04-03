@@ -900,6 +900,13 @@ void WindowTree::SendToPointerWatcher(const ui::Event& event,
                                    display_id);
 }
 
+WindowManagerState* WindowTree::AppendExternalModeWindowManagerState(
+    std::unique_ptr<WindowManagerState> window_manager_state) {
+  WindowManagerState* state = window_manager_state.get();
+  external_mode_wm_states_.insert(std::move(window_manager_state));
+  return state;
+}
+
 bool WindowTree::ShouldRouteToWindowManager(const ServerWindow* window) const {
   if (window_manager_state_)
     return false;  // We are the window manager, don't route to ourself.

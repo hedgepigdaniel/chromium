@@ -189,6 +189,7 @@ class Display : public PlatformDisplayDelegate,
   void OnAcceleratedWidgetAvailable() override;
   void OnNativeCaptureLost() override;
   void OnBoundsChanged(const gfx::Rect& new_bounds) override;
+  void OnCloseRequest() override;
 
   // FocusControllerDelegate:
   bool CanHaveActiveChildren(ServerWindow* window) const override;
@@ -230,8 +231,6 @@ class Display : public PlatformDisplayDelegate,
   cc::LocalSurfaceIdAllocator allocator_;
 
   WindowManagerDisplayRootMap window_manager_display_root_map_;
-
-  std::unique_ptr<WindowManagerState> external_mode_wm_state_;
 
   DISALLOW_COPY_AND_ASSIGN(Display);
 };
