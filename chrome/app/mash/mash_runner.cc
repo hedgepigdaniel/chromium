@@ -62,7 +62,7 @@
 #include "chrome/app/shutdown_signal_handlers_posix.h"
 #endif  // defined(OS_POSIX)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(ENABLE_PACKAGE_MASH_SERVICES)
 #include "chrome/app/mash/chrome_mus_catalog.h"
 #endif
 
@@ -211,7 +211,7 @@ int MashRunner::RunServiceManagerInMain() {
   ServiceProcessLauncherDelegateImpl service_process_launcher_delegate;
   const bool is_mash =
       base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kMash);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(ENABLE_PACKAGE_MASH_SERVICES)
   service_manager::BackgroundServiceManager background_service_manager(
       &service_process_launcher_delegate,
       is_mash ? CreateChromeMashCatalog() : CreateChromeMusCatalog());
