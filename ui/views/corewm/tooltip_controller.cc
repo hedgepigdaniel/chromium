@@ -328,7 +328,7 @@ void TooltipController::UpdateIfRequired() {
 }
 
 void TooltipController::ShowTooltip() {
-  if (!tooltip_window_)
+  //if (!tooltip_window_)
     return;
   gfx::Point widget_loc =
       curr_mouse_loc_ + tooltip_window_->GetBoundsInScreen().OffsetFromOrigin();
