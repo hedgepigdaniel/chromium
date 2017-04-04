@@ -50,10 +50,11 @@ Display::~Display() {
     focus_controller_.reset();
   }
 
-  if (!binding_) {
-    for (auto& pair : window_manager_display_root_map_)
-      pair.second->window_manager_state()->OnDisplayDestroying(this);
-  } else if (!window_manager_display_root_map_.empty()) {
+  // Notify the window manager state that the display is being destroyed.
+  for (auto& pair : window_manager_display_root_map_)
+    pair.second->window_manager_state()->OnDisplayDestroying(this, !!binding_);
+
+  if (binding_ && !window_manager_display_root_map_.empty()) {
     // If there is a |binding_| then the tree was created specifically for one
     // or more displays, which correspond to WindowTreeHosts.
     WindowManagerDisplayRoot* display_root =

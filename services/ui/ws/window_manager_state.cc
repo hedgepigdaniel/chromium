@@ -349,7 +349,8 @@ void WindowManagerState::AddWindowManagerDisplayRoot(
   window_manager_display_roots_.push_back(std::move(display_root));
 }
 
-void WindowManagerState::OnDisplayDestroying(Display* display) {
+void WindowManagerState::OnDisplayDestroying(Display* display,
+                                             bool external_window_mode) {
   if (display->platform_display() == platform_display_with_capture_)
     platform_display_with_capture_ = nullptr;
 
@@ -359,7 +360,8 @@ void WindowManagerState::OnDisplayDestroying(Display* display) {
       (*iter)->root()->AddObserver(this);
       orphaned_window_manager_display_roots_.push_back(std::move(*iter));
       window_manager_display_roots_.erase(iter);
-      window_tree_->OnDisplayDestroying(display->GetId());
+      if (!external_window_mode)
+        window_tree_->OnDisplayDestroying(display->GetId());
       return;
     }
   }
