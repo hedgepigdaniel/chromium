@@ -183,7 +183,7 @@ class WindowManagerState : public EventDispatcherDelegate,
       std::unique_ptr<WindowManagerDisplayRoot> display_root);
 
   // Called when a Display is deleted.
-  void OnDisplayDestroying(Display* display, bool external_window_mode);
+  void OnDisplayDestroying(Display* display);
 
   // Sets the visibility of all window manager roots windows to |value|.
   void SetAllRootWindowsVisible(bool value);
