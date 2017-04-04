@@ -2214,7 +2214,7 @@ bool WindowTree::IsWindowCreatedByWindowManager(
   // WindowManager attached, the window manager didn't create this window.
   const WindowManagerDisplayRoot* display_root =
       GetWindowManagerDisplayRoot(window);
-  if (!display_root || !display_root->window_manager_state())
+  if (!display_root)
     return false;
 
   return display_root->window_manager_state()->window_tree()->id() ==

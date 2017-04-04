@@ -323,7 +323,7 @@ void Display::OnAcceleratedWidgetAvailable() {
 
 void Display::OnNativeCaptureLost() {
   WindowManagerDisplayRoot* display_root = GetActiveWindowManagerDisplayRoot();
-  if (display_root && display_root->window_manager_state())
+  if (display_root)
     display_root->window_manager_state()->SetCapture(nullptr, kInvalidClientId);
 }
 
@@ -432,7 +432,7 @@ void Display::OnFocusChanged(FocusControllerChangeSource change_source,
 
   // WindowManagers are always notified of focus changes.
   WindowManagerDisplayRoot* display_root = GetActiveWindowManagerDisplayRoot();
-  if (display_root && display_root->window_manager_state()) {
+  if (display_root) {
     WindowTree* wm_tree = display_root->window_manager_state()->window_tree();
     if (wm_tree != owning_tree_old && wm_tree != embedded_tree_old &&
         wm_tree != owning_tree_new && wm_tree != embedded_tree_new) {
@@ -462,7 +462,7 @@ EventDispatchDetails Display::OnEventFromSource(Event* event) {
   // in external window mode, so that event handling is functional.
   // htts://crbug.com/701129
   WindowManagerDisplayRoot* display_root = GetActiveWindowManagerDisplayRoot();
-  if (display_root && display_root->window_manager_state()) {
+  if (display_root) {
     WindowManagerState* wm_state = display_root->window_manager_state();
     wm_state->ProcessEvent(*event, GetId());
   }
