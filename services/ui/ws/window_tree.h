@@ -618,11 +618,11 @@ class WindowTree : public mojom::WindowTree,
   struct DragMoveState;
   std::unique_ptr<DragMoveState> drag_move_state_;
 
+  Id pending_client_window_id_ = kInvalidClientId;
+
   // A weak ptr factory for callbacks from the window manager for when we send
   // a image move. All weak ptrs are invalidated when a drag is completed.
   base::WeakPtrFactory<WindowTree> drag_weak_factory_;
-
-  Id pending_client_window_id_ = kInvalidClientId;
 
   DISALLOW_COPY_AND_ASSIGN(WindowTree);
 };
