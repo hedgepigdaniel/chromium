@@ -129,6 +129,9 @@ void WindowTree::DoOnEmbed(mojom::WindowTreePtr tree,
 
     ClientWindowId window_id;
     IsWindowKnown(root_window, &window_id);
+    
+    // In external window mode, every platform window is an activation parent.
+    AddActivationParent(window_id);
 
     const bool drawn =
         root_window->parent() && root_window->parent()->IsDrawn();
