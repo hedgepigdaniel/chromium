@@ -58,17 +58,17 @@ Display::~Display() {
     // or more displays, which correspond to WindowTreeHosts.
     WindowManagerDisplayRoot* display_root =
         window_manager_display_root_map_.begin()->second;
-      WindowTree* tree = display_root->window_manager_state()->window_tree();
-      ServerWindow* root = display_root->root();
-      if (tree) {
-        // Delete the window root corresponding to that display.
-        ClientWindowId root_id;
-        if (tree->IsWindowKnown(root, &root_id))
-          tree->DeleteWindow(root_id);
+    WindowTree* tree = display_root->window_manager_state()->window_tree();
+    ServerWindow* root = display_root->root();
+    if (tree) {
+      // Delete the window root corresponding to that display.
+      ClientWindowId root_id;
+      if (tree->IsWindowKnown(root, &root_id))
+        tree->DeleteWindow(root_id);
 
-        // Destroy the tree once all the roots have been removed.
-        if (tree->roots().empty())
-          window_server_->DestroyTree(tree);
+      // Destroy the tree once all the roots have been removed.
+      if (tree->roots().empty())
+        window_server_->DestroyTree(tree);
     }
   }
 }
