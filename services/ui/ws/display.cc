@@ -52,7 +52,7 @@ Display::~Display() {
 
   // Notify the window manager state that the display is being destroyed.
   for (auto& pair : window_manager_display_root_map_)
-    pair.second->window_manager_state()->OnDisplayDestroying(this, !!binding_);
+    pair.second->window_manager_state()->OnDisplayDestroying(this);
 
   if (binding_ && !window_manager_display_root_map_.empty()) {
     // If there is a |binding_| then the tree was created specifically for one
