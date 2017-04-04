@@ -588,7 +588,7 @@ void WindowServer::FinishOperation() {
 void WindowServer::UpdateNativeCursorFromMouseLocation(ServerWindow* window) {
   WindowManagerDisplayRoot* display_root =
       display_manager_->GetWindowManagerDisplayRoot(window);
-  if (display_root && display_root->window_manager_state()) {
+  if (display_root) {
     EventDispatcher* event_dispatcher =
         display_root->window_manager_state()->event_dispatcher();
     event_dispatcher->UpdateCursorProviderByLastKnownLocation();
@@ -600,7 +600,7 @@ void WindowServer::UpdateNativeCursorFromMouseLocation(ServerWindow* window) {
 void WindowServer::UpdateNativeCursorIfOver(ServerWindow* window) {
   WindowManagerDisplayRoot* display_root =
       display_manager_->GetWindowManagerDisplayRoot(window);
-  if (!display_root || !display_root->window_manager_state())
+  if (!display_root)
     return;
 
   EventDispatcher* event_dispatcher =
@@ -674,7 +674,7 @@ void WindowServer::OnWindowHierarchyChanged(ServerWindow* window,
 
   WindowManagerDisplayRoot* display_root =
       display_manager_->GetWindowManagerDisplayRoot(window);
-  if (display_root && display_root->window_manager_state())
+  if (display_root)
     display_root->window_manager_state()
         ->ReleaseCaptureBlockedByAnyModalWindow();
 
@@ -753,7 +753,7 @@ void WindowServer::OnWindowVisibilityChanged(ServerWindow* window) {
 
   WindowManagerDisplayRoot* display_root =
       display_manager_->GetWindowManagerDisplayRoot(window);
-  if (display_root && display_root->window_manager_state())
+  if (display_root)
     display_root->window_manager_state()->ReleaseCaptureBlockedByModalWindow(
         window);
 }

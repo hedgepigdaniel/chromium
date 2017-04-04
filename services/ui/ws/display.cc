@@ -58,19 +58,17 @@ Display::~Display() {
     // or more displays, which correspond to WindowTreeHosts.
     WindowManagerDisplayRoot* display_root =
         window_manager_display_root_map_.begin()->second;
-    if (display_root->window_manager_state()) {
-      WindowTree* tree = display_root->window_manager_state()->window_tree();
-      ServerWindow* root = display_root->root();
-      if (tree) {
-        // Delete the window root corresponding to that display.
-        ClientWindowId root_id;
-        if (tree->IsWindowKnown(root, &root_id))
-          tree->DeleteWindow(root_id);
+    WindowTree* tree = display_root->window_manager_state()->window_tree();
+    ServerWindow* root = display_root->root();
+    if (tree) {
+      // Delete the window root corresponding to that display.
+      ClientWindowId root_id;
+      if (tree->IsWindowKnown(root, &root_id))
+        tree->DeleteWindow(root_id);
 
-        // Destroy the tree once all the roots have been removed.
-        if (tree->roots().empty())
-          window_server_->DestroyTree(tree);
-      }
+      // Destroy the tree once all the roots have been removed.
+      if (tree->roots().empty())
+        window_server_->DestroyTree(tree);
     }
   }
 }
@@ -323,7 +321,7 @@ void Display::OnAcceleratedWidgetAvailable() {
 
 void Display::OnNativeCaptureLost() {
   WindowManagerDisplayRoot* display_root = GetActiveWindowManagerDisplayRoot();
-  if (display_root && display_root->window_manager_state())
+  if (display_root)
     display_root->window_manager_state()->SetCapture(nullptr, kInvalidClientId);
 }
 
@@ -432,7 +430,7 @@ void Display::OnFocusChanged(FocusControllerChangeSource change_source,
 
   // WindowManagers are always notified of focus changes.
   WindowManagerDisplayRoot* display_root = GetActiveWindowManagerDisplayRoot();
-  if (display_root && display_root->window_manager_state()) {
+  if (display_root) {
     WindowTree* wm_tree = display_root->window_manager_state()->window_tree();
     if (wm_tree != owning_tree_old && wm_tree != embedded_tree_old &&
         wm_tree != owning_tree_new && wm_tree != embedded_tree_new) {
@@ -462,7 +460,7 @@ EventDispatchDetails Display::OnEventFromSource(Event* event) {
   // in external window mode, so that event handling is functional.
   // htts://crbug.com/701129
   WindowManagerDisplayRoot* display_root = GetActiveWindowManagerDisplayRoot();
-  if (display_root && display_root->window_manager_state()) {
+  if (display_root) {
     WindowManagerState* wm_state = display_root->window_manager_state();
     wm_state->ProcessEvent(*event, GetId());
   }
