@@ -2209,6 +2209,9 @@ bool WindowTree::IsWindowRootOfAnotherTreeForAccessPolicy(
 
 bool WindowTree::IsWindowCreatedByWindowManager(
     const ServerWindow* window) const {
+  if (window_server_->IsInExternalWindowMode())
+    return false;  // No window manager is available in external mode.
+
   // The WindowManager is attached to the root of the Display, if there isn't a
   // WindowManager attached, the window manager didn't create this window.
   const WindowManagerDisplayRoot* display_root =
