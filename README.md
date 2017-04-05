@@ -44,14 +44,14 @@ for now. One can run the MUS Demo as follows:
 
 ```
 ninja -C out/Ozone mus_demo mash:all
-./out/Ozone/mash_demo --service=mus_demo --external-window-count=2
+./out/Ozone/mash --service=mus_demo --external-window-count=2
 ```
 
 One can also run automated unit tests. For example to check the MUS demo and
 window server:
 
 ```
-ninja -C out/Ozone/mash --ozone mus_ws_unittests mus_demo_unittests
+ninja -C out/Ozone mus_ws_unittests mus_demo_unittests
 ./out/Ozone/mus_demo_unittests
 ./out/Ozone/mus_ws_unittests
 ```
