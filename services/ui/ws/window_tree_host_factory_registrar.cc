@@ -44,8 +44,9 @@ void WindowTreeHostFactoryRegistrar::Register(
   //
   // NOTE: WindowServer::AddTree calls WindowTree::Init, which can trigger a
   // WindowTreeClient::OnEmbed call. In the particular flow though, WTC::OnEmbed
-  // will not get called because the WindowTree instance was created above taking
-  // 'nullptr' as the ServerWindow parameter, hence the WindowTree has no 'root' yet.
+  // will not get called because the WindowTree instance was created above
+  // taking 'nullptr' as the ServerWindow parameter, hence the WindowTree has no
+  // 'root' yet.
   window_server_->AddTree(std::move(tree), std::move(tree_binding),
                           nullptr /*mojom::WindowTreePtr*/);
   window_server_->set_window_tree_host_factory(std::move(host_factory));
