@@ -328,8 +328,8 @@ void TooltipController::UpdateIfRequired() {
 }
 
 void TooltipController::ShowTooltip() {
-  //if (!tooltip_window_)
-    return;
+  // if (!tooltip_window_)
+  return;
   gfx::Point widget_loc =
       curr_mouse_loc_ + tooltip_window_->GetBoundsInScreen().OffsetFromOrigin();
   tooltip_->SetText(tooltip_window_, tooltip_text_whitespace_trimmed_,
