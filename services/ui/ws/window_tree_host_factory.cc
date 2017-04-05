@@ -6,11 +6,11 @@
 
 #include "mojo/public/cpp/bindings/map.h"
 #include "services/ui/display/viewport_metrics.h"
+#include "services/ui/public/cpp/property_type_converters.h"
 #include "services/ui/ws/display.h"
 #include "services/ui/ws/display_binding.h"
 #include "services/ui/ws/window_server.h"
 #include "services/ui/ws/window_tree.h"
-#include "services/ui/public/cpp/property_type_converters.h"
 
 namespace ui {
 namespace ws {
@@ -49,8 +49,7 @@ void WindowTreeHostFactory::CreatePlatformWindow(
 
   auto iter = properties.find(ui::mojom::WindowManager::kBounds_InitProperty);
   if (iter != properties.end()) {
-    metrics.bounds_in_pixels =
-        mojo::ConvertTo<gfx::Rect>(iter->second);
+    metrics.bounds_in_pixels = mojo::ConvertTo<gfx::Rect>(iter->second);
   } else
     metrics.bounds_in_pixels = gfx::Rect(1024, 768);
   ws_display->Init(metrics, std::move(display_binding));
