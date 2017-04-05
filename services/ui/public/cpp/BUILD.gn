@@ -78,8 +78,7 @@ source_set("internal") {
     "//ui/gfx/geometry",
   ]
 
-  data_deps = [
-  ]
+  data_deps = []
 
   defines = [ "GL_GLEXT_PROTOTYPES" ]
 
