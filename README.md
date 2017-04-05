@@ -3,10 +3,10 @@ The goal of this project is to enable Chromium browser to run on Wayland and X11
 Chromium Ozone platform abstraction layer.
 # Building Linux/Ozone for Wayland
 To build chrome, certain steps should be performed:
-1) Configure gn args by 
+1) Configure gn args by
 
    > gn args out/Ozone
-   
+
    The arguments should be the following:
    ```
    use_ozone = true
@@ -28,6 +28,12 @@ To build chrome, certain steps should be performed:
 2) Build Chromium
 
    > ninja -C out/Ozone chrome
-  
+
    You can specify amount of threads to be used for compiling. For example:
    > -j8
+3) Run chromium
+   > ./out/Ozone/chrome --mus
+   
+   You can choose target ozone platform by adding
+   
+   > --ozone-platform=wayland or --ozone-platform=x11
