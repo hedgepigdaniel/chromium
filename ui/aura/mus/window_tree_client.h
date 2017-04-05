@@ -242,7 +242,8 @@ class AURA_EXPORT WindowTreeClient
       const base::Optional<cc::LocalSurfaceId>& local_surface_id =
           base::nullopt);
 
-  void ConfigureWindowDataFromServer(WindowTreeHostMus* window_tree_host,
+  void ConfigureWindowDataFromServer(
+      WindowTreeHostMus* window_tree_host,
       const ui::mojom::WindowData& window_data,
       const base::Optional<cc::LocalSurfaceId>& local_surface_id);
 

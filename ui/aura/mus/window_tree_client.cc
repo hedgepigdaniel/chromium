@@ -472,7 +472,8 @@ std::unique_ptr<WindowTreeHostMus> WindowTreeClient::CreateWindowTreeHost(
                                           display_id, frame_sink_id);
   window_tree_host->InitHost();
 
-  ConfigureWindowDataFromServer(window_tree_host.get(), window_data, local_surface_id);
+  ConfigureWindowDataFromServer(window_tree_host.get(), window_data,
+                                local_surface_id);
   return window_tree_host;
 }
 
@@ -943,7 +944,8 @@ void WindowTreeClient::OnEmbed(
 
     WindowTreeHostMus* window_tree_host = GetWindowTreeHostMus(it->second);
     window_tree_host->InitHost();
-    ConfigureWindowDataFromServer(window_tree_host, *root_data, local_surface_id);
+    ConfigureWindowDataFromServer(window_tree_host, *root_data,
+                                  local_surface_id);
     it->second->SetFrameSinkIdFromServer(frame_sink_id);
 
     // Pass a raw pointer to WindowTreeHostMus, which helps delegate to identify
